@@ -1,0 +1,9 @@
+﻿## Interface: 50100
+## Title: |cff0099CCrain|rPlates
+## Notes: Changes the default nameplates
+## Author: Rainrider
+## Version: 1.0
+## X-Credits: Caellian
+## X-Category: Interface Enchancements
+
+rainPlates.lua
