@@ -1,27 +1,16 @@
 ﻿local barTexture = [=[Interface\AddOns\rainPlates\media\normtexc]=]
 local iconTexture = [=[Interface\AddOns\rainPlates\media\buttonnormal]=]
-local overlayTexture = [=[Interface\Tooltips\Nameplate-Border]=]
+local glowTexture = [=[Interface\AddOns\rainPlates\media\glowTex]=]
 local font, fontSize, fontOutline = GameFontNormal:GetFont(), 8
 local raidIcons = [=[Interface\AddOns\rainPlates\media\raidicons]=]
 
-local backdrop = {
-	bgFile   = [=[Interface\ChatFrame\ChatFrameBackground]=],
-    edgeFile = [=[Interface\AddOns\rainPlates\media\glowTex3]=],
-    edgeSize = 2,
-    insets   = {
-		left   = 2,
-		right  = 2,
-		top    = 2,
-		bottom = 2,
-	},
-}
-
 local healthBarHeight = 5;
-local castBarHeight = 3;
+local castBarHeight = 5;
 -- TODO: when does UnitLevel("player") return the right level?
 local playerLevel = UnitLevel("player")
 
 local select = select
+local GetMinMaxValues = GetMinMaxValues
 
 local eventFrame = CreateFrame("Frame")
 
@@ -42,11 +31,10 @@ local UpdateThreat = function(self, elapsed)
 	self.elapsed = self.elapsed + elapsed
 	if self.elapsed >= 0.5 then
 		if not self.oldglow:IsShown() then
-			self.healthBar.hpGlow:SetBackdropBorderColor(0, 0, 0)
+			self.healthBar.glow:SetVertexColor(0, 0, 0)
 		else
 			local r, g, b = self.oldglow:GetVertexColor()
-
-			self.healthBar.hpGlow:SetBackdropBorderColor(r, g, b)
+			self.healthBar.glow:SetVertexColor(r, g, b, 1)
 		end
 
 		self.elapsed = 0
@@ -98,8 +86,10 @@ local ColorCastbar = function(self)
 	if self.shield:IsShown() then
 		self:SetStatusBarColor(0.8, 0.05, 0)
 		self.iconOverlay:SetVertexColor(0.8, 0.05, 0)
+		self.glow:SetVertexColor(0.75, 0.75, 0.75)
 	else
 		self.iconOverlay:SetVertexColor(1, 1, 1)
+		self.glow:SetVertexColor(0, 0, 0)
 	end
 end
 
@@ -141,15 +131,12 @@ local CreatePlate = function(self)
 	hpBackground:SetTexture(barTexture)
 	healthBar.hpBackground = hpBackground
 
-	-- TODO: could use a texture or apply the backdrop directly to the healthbar instead
-	local hpGlow = CreateFrame("Frame", nil, healthBar)
-	hpGlow:SetFrameLevel(healthBar:GetFrameLevel() -1 > 0 and healthBar:GetFrameLevel() -1 or 0)
-	hpGlow:SetPoint("TOPLEFT", healthBar, "TOPLEFT", -2, 2)
-	hpGlow:SetPoint("BOTTOMRIGHT", healthBar, "BOTTOMRIGHT", 2, -2)
-	hpGlow:SetBackdrop(backdrop)
-	hpGlow:SetBackdropColor(0, 0, 0, 0)
-	hpGlow:SetBackdropBorderColor(0, 0, 0)
-	healthBar.hpGlow = hpGlow
+	local hbGlow = healthBar:CreateTexture(nil, "BACKGROUND")
+	hbGlow:SetTexture(glowTexture)
+	hbGlow:SetPoint("TOPLEFT", -1.5, 1.5)
+	hbGlow:SetPoint("BOTTOMRIGHT", 1.5, -1.5)
+	hbGlow:SetVertexColor(0, 0, 0)
+	healthBar.glow = hbGlow
 
 	castBar:HookScript("OnShow", ColorCastbar)
 	castBar:HookScript("OnSizeChanged", OnSizeChanged)
@@ -164,14 +151,12 @@ local CreatePlate = function(self)
 	cbBackground:SetTexture(barTexture)
 	cbBackground:SetVertexColor(0.25, 0.25, 0.25, 0.75)
 
-	-- TODO: could use a texture or apply the backdrop directly to the castbar instead
-	local cbGlow = CreateFrame("Frame", nil, castBar)
-	cbGlow:SetFrameLevel(castBar:GetFrameLevel() -1 > 0 and castBar:GetFrameLevel() -1 or 0)
-	cbGlow:SetPoint("TOPLEFT", castBar, -2, 2)
-	cbGlow:SetPoint("BOTTOMRIGHT", castBar, 2, -2)
-	cbGlow:SetBackdrop(backdrop)
-	cbGlow:SetBackdropColor(0, 0, 0, 0)
-	cbGlow:SetBackdropBorderColor(0, 0, 0)
+	local cbGlow = castBar:CreateTexture(nil, "BACKGROUND")
+	cbGlow:SetTexture(glowTexture)
+	cbGlow:SetPoint("TOPLEFT", -1.5, 1.5)
+	cbGlow:SetPoint("BOTTOMRIGHT", 1.5, -1.5)
+	cbGlow:SetVertexColor(0, 0, 0)
+	castBar.glow = cbGlow
 
 	local castTime = castBar:CreateFontString()
 	castTime:SetPoint("RIGHT", castBar, "LEFT", -2, 0)
@@ -258,10 +243,8 @@ if playerLevel ~= MAX_PLAYER_LEVEL then
 end
 
 eventFrame:SetScript("OnEvent", function(self, event, level)
-	if event == "PLAYER_LEVEL_UP" then
-		playerLevel = tonumber(level)
-	end
-	
+	playerLevel = tonumber(level)
+
 	if playerLevel == MAX_PLAYER_LEVEL then
 		self:UnregisterEvent("PLAYER_LEVEL_UP")
 	end
