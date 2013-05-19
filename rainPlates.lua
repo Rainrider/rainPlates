@@ -18,13 +18,19 @@ SetCVar("bloattest", 0) -- 1 might make nameplates larger but it fixes the disap
 SetCVar("bloatnameplates", 0) -- 1 makes nameplates larger depending on threat percentage.
 SetCVar("bloatthreat", 0)
 
+local castbarValues = {}
+
 local UpdateTime = function(self, value)
 	local minValue, maxValue = self:GetMinMaxValues()
-	if self.channeling then
-		self.time:SetFormattedText("%.1f ", value)
-	else
-		self.time:SetFormattedText("%.1f ", maxValue - value)
+	local oldValue = castbarValues[self.frameName]
+	if (oldValue) then
+		if (value < oldValue) then -- castbar is depleting -> unit is channeling a spell
+			self.time:SetFormattedText("%.1f ", value)
+		else
+			self.time:SetFormattedText("%.1f ", maxValue - value)
+		end
 	end
+	castbarValues[self.frameName] = value
 end
 
 local UpdateThreat = function(self, elapsed)
@@ -81,8 +87,6 @@ local UpdatePlate = function(self)
 end
 
 local ColorCastbar = function(self)
-	self.channeling = UnitChannelInfo("target") -- castbars on nameplates are only visible for the target (arena?)
-
 	if self.shield:IsShown() then
 		self:SetStatusBarColor(0.8, 0.05, 0)
 		self.iconOverlay:SetVertexColor(0.8, 0.05, 0)
@@ -107,7 +111,7 @@ local OnSizeChanged = function(self, width, height)
 	end
 end
 
-local CreatePlate = function(self)
+local CreatePlate = function(self, frameName)
 	local barFrame, nameFrame = self:GetChildren()
 
 	local healthBar, castBar = barFrame:GetChildren()
@@ -145,6 +149,7 @@ local CreatePlate = function(self)
 	castBar:SetStatusBarTexture(barTexture)
 
 	castBar.shield = shieldedRegion
+	castBar.frameName = frameName
 
 	local cbBackground = castBar:CreateTexture(nil, "BACKGROUND")
 	cbBackground:SetAllPoints()
@@ -215,7 +220,7 @@ local CheckFrames = function(num, ...)
 		local frame = select(i, ...)
 		local frameName = frame:GetName()
 		if frameName and frameName:find("NamePlate%d") and not frame.done then
-			CreatePlate(frame)
+			CreatePlate(frame, frameName)
 			frame.done = true
 		end
 	end
