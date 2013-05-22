@@ -53,7 +53,7 @@ local UpdatePlate = function(self)
 	self.healthBar:SetHeight(healthBarHeight)
 
 	local r, g, b = self.healthBar:GetStatusBarColor()
-	self.healthBar.hpBackground:SetVertexColor(r * 0.33, g * 0.33, b * 0.33, 0.75)
+	self.healthBar.background:SetVertexColor(r * 0.33, g * 0.33, b * 0.33, 0.75)
 
 	self.castBar:ClearAllPoints()
 	self.castBar:SetPoint("TOPLEFT", self.healthBar, "BOTTOMLEFT", 0, -4)
@@ -116,31 +116,31 @@ local CreatePlate = function(self, frameName)
 
 	local healthBar, castBar = barFrame:GetChildren()
 
-	local glowRegion, overlayRegion, highlightRegion, levelTextRegion, bossIconRegion, raidIconRegion, stateIconRegion = barFrame:GetRegions()
-	local _, castbarOverlay, shieldedRegion, spellIconRegion, spellNameRegion, spellNameBGRegion = castBar:GetRegions()
-	local nameTextRegion = nameFrame:GetRegions()
+	local glow, healthbarOverlay, highlight, levelText, bossIcon, raidIcon, stateIcon = barFrame:GetRegions()
+	local _, castbarOverlay, shieldIcon, spellIcon, spellName, spellNameBackground = castBar:GetRegions()
+	local nameText = nameFrame:GetRegions()
 
-	nameTextRegion:ClearAllPoints()
-	nameTextRegion:SetPoint("BOTTOM", healthBar, "TOP", 0, 2)
-	nameTextRegion:SetFont(font, fontSize, fontOutline)
-	nameTextRegion:SetShadowOffset(1.25, -1.25)
-	self.name = nameTextRegion
+	nameText:ClearAllPoints()
+	nameText:SetPoint("BOTTOM", healthBar, "TOP", 0, 2)
+	nameText:SetFont(font, fontSize, fontOutline)
+	nameText:SetShadowOffset(1.25, -1.25)
+	self.name = nameText
 
-	levelTextRegion:SetFont(font, fontSize, fontOutline)
-	levelTextRegion:SetShadowOffset(1.25, -1.25)
-	self.level = levelTextRegion
+	levelText:SetFont(font, fontSize, fontOutline)
+	levelText:SetShadowOffset(1.25, -1.25)
+	self.level = levelText
 
-	spellNameRegion:ClearAllPoints()
-	spellNameRegion:SetPoint("TOP", castBar, "BOTTOM", 0, -2)
-	spellNameRegion:SetFont(font, fontSize, fontOutline)
-	spellNameRegion:SetShadowOffset(1.25, -1.25)
+	spellName:ClearAllPoints()
+	spellName:SetPoint("TOP", castBar, "BOTTOM", 0, -2)
+	spellName:SetFont(font, fontSize, fontOutline)
+	spellName:SetShadowOffset(1.25, -1.25)
 
 	healthBar:SetStatusBarTexture(barTexture)
 
-	local hpBackground = healthBar:CreateTexture(nil, "BACKGROUND")
-	hpBackground:SetAllPoints()
-	hpBackground:SetTexture(barTexture)
-	healthBar.hpBackground = hpBackground
+	local hbBackground = healthBar:CreateTexture(nil, "BACKGROUND")
+	hbBackground:SetAllPoints()
+	hbBackground:SetTexture(barTexture)
+	healthBar.background = hbBackground
 
 	local hbGlow = healthBar:CreateTexture(nil, "BACKGROUND")
 	hbGlow:SetTexture(glowTexture)
@@ -155,7 +155,7 @@ local CreatePlate = function(self, frameName)
 
 	castBar:SetStatusBarTexture(barTexture)
 
-	castBar.shield = shieldedRegion
+	castBar.shield = shieldIcon
 	castBar.frameName = frameName
 
 	local cbBackground = castBar:CreateTexture(nil, "BACKGROUND")
@@ -177,42 +177,42 @@ local CreatePlate = function(self, frameName)
 	castTime:SetShadowOffset(1.25, -1.25)
 	castBar.time = castTime
 
-	spellIconRegion:ClearAllPoints()
-	spellIconRegion:SetParent(castBar)
-	spellIconRegion:SetPoint("LEFT", castBar, 8, 0)
-	spellIconRegion:SetSize(15, 15)
-	spellIconRegion:SetTexCoord(0.9, 0.1, 0.9, 0.1)
+	spellIcon:ClearAllPoints()
+	spellIcon:SetParent(castBar)
+	spellIcon:SetPoint("LEFT", castBar, 8, 0)
+	spellIcon:SetSize(15, 15)
+	spellIcon:SetTexCoord(0.9, 0.1, 0.9, 0.1)
 
-	local iconOverlay = castBar:CreateTexture(nil, "OVERLAY", nil, 2) -- 2 sublevels above spellIconRegion
-	iconOverlay:SetPoint("TOPLEFT", spellIconRegion, -1.5, 1.5)
-	iconOverlay:SetPoint("BOTTOMRIGHT", spellIconRegion, 1.5, -1.5)
+	local iconOverlay = castBar:CreateTexture(nil, "OVERLAY", nil, 2) -- 2 sublevels above spellIcon
+	iconOverlay:SetPoint("TOPLEFT", spellIcon, -1.5, 1.5)
+	iconOverlay:SetPoint("BOTTOMRIGHT", spellIcon, 1.5, -1.5)
 	iconOverlay:SetTexture(iconTexture)
 	castBar.iconOverlay = iconOverlay
 
 	-- TODO: what is that for
-	highlightRegion:SetTexture(barTexture)
-	highlightRegion:SetVertexColor(0.25, 0.25, 0.25)
-	self.highlight = highlightRegion
+	highlight:SetTexture(barTexture)
+	highlight:SetVertexColor(0.25, 0.25, 0.25)
+	self.highlight = highlight
 
-	raidIconRegion:ClearAllPoints()
-	raidIconRegion:SetPoint("RIGHT", healthBar, -8, 0)
-	raidIconRegion:SetSize(15, 15)
-	raidIconRegion:SetTexture(raidIcons)
+	raidIcon:ClearAllPoints()
+	raidIcon:SetPoint("RIGHT", healthBar, -8, 0)
+	raidIcon:SetSize(15, 15)
+	raidIcon:SetTexture(raidIcons)
 
 	self.healthBar = healthBar
 	self.castBar = castBar
 
-	self.oldglow = glowRegion -- for threat update
-	self.elite = stateIconRegion
-	self.boss = bossIconRegion
+	self.oldglow = glow -- for threat update
+	self.elite = stateIcon
+	self.boss = bossIcon
 
-	glowRegion:SetTexture(nil)
-	overlayRegion:SetTexture(nil)
-	shieldedRegion:SetTexture(nil)
+	glow:SetTexture(nil)
+	healthbarOverlay:SetTexture(nil)
+	shieldIcon:SetTexture(nil)
 	castbarOverlay:SetTexture(nil)
-	stateIconRegion:SetTexture(nil)
-	bossIconRegion:SetTexture(nil)
-	spellNameBGRegion:SetTexture(nil)
+	stateIcon:SetTexture(nil)
+	bossIcon:SetTexture(nil)
+	spellNameBackground:SetTexture(nil)
 
 	UpdatePlate(self)
 
