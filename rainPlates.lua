@@ -115,10 +115,12 @@ local CreatePlate = function(self, frameName)
 	local barFrame, nameFrame = self:GetChildren()
 
 	local healthBar, castBar = barFrame:GetChildren()
+
 	local glowRegion, overlayRegion, highlightRegion, levelTextRegion, bossIconRegion, raidIconRegion, stateIconRegion = barFrame:GetRegions()
-	local _, castbarOverlay, shieldedRegion, spellIconRegion = castBar:GetRegions()
+	local _, castbarOverlay, shieldedRegion, spellIconRegion, spellNameRegion, spellNameBGRegion = castBar:GetRegions()
 	local nameTextRegion = nameFrame:GetRegions()
 
+	nameTextRegion:ClearAllPoints()
 	nameTextRegion:SetPoint("BOTTOM", healthBar, "TOP", 0, 2)
 	nameTextRegion:SetFont(font, fontSize, fontOutline)
 	nameTextRegion:SetShadowOffset(1.25, -1.25)
@@ -127,6 +129,11 @@ local CreatePlate = function(self, frameName)
 	levelTextRegion:SetFont(font, fontSize, fontOutline)
 	levelTextRegion:SetShadowOffset(1.25, -1.25)
 	self.level = levelTextRegion
+
+	spellNameRegion:ClearAllPoints()
+	spellNameRegion:SetPoint("TOP", castBar, "BOTTOM", 0, -2)
+	spellNameRegion:SetFont(font, fontSize, fontOutline)
+	spellNameRegion:SetShadowOffset(1.25, -1.25)
 
 	healthBar:SetStatusBarTexture(barTexture)
 
@@ -205,6 +212,7 @@ local CreatePlate = function(self, frameName)
 	castbarOverlay:SetTexture(nil)
 	stateIconRegion:SetTexture(nil)
 	bossIconRegion:SetTexture(nil)
+	spellNameBGRegion:SetTexture(nil)
 
 	UpdatePlate(self)
 
