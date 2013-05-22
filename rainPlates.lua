@@ -1,4 +1,4 @@
-﻿local barTexture = [=[Interface\AddOns\rainPlates\media\normtexc]=]
+local barTexture = [=[Interface\AddOns\rainPlates\media\normtexc]=]
 local iconTexture = [=[Interface\AddOns\rainPlates\media\buttonnormal]=]
 local glowTexture = [=[Interface\AddOns\rainPlates\media\glowTex]=]
 local font, fontSize, fontOutline = GameFontNormal:GetFont(), 8
