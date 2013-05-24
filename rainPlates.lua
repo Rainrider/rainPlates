@@ -1,6 +1,7 @@
 local barTexture = [=[Interface\AddOns\rainPlates\media\normtexc]=]
 local iconTexture = [=[Interface\AddOns\rainPlates\media\buttonnormal]=]
 local glowTexture = [=[Interface\AddOns\rainPlates\media\glowTex]=]
+local highlightTexture = [=[Interface\AddOns\rainPlates\media\highlighttex]=]
 local font, fontSize, fontOutline = GameFontNormal:GetFont(), 8
 local raidIcons = [=[Interface\AddOns\rainPlates\media\raidicons]=]
 
@@ -60,10 +61,6 @@ local UpdatePlate = function(self)
 	self.castBar:SetPoint("TOPRIGHT", self.healthBar, "BOTTOMRIGHT", 0, -4)
 	self.castBar:SetHeight(castBarHeight)
 
-	self.highlight:ClearAllPoints()
-	--self.highlight:SetAllPoints(self.healthBar) -- TODO: almost same position as hpGlow?
-	self.highlight:SetAllPoints(self)
-
 	local name = self.name:GetText()
 	name = (string.len(name) > 20) and string.gsub(name, "%s?(.[\128-\191]*)%S+%s", "%1. ") or name
 	self.name:SetText(name)
@@ -80,10 +77,10 @@ local UpdatePlate = function(self)
 	else
 		self.level:SetText(level..(elite and "+" or ""))
 	end
-	-- TODO: testing only
-	if self.highlight:IsShown() then
-		print(self.highlight:GetVertexColor())
-	end
+
+	self.highlight:SetParent(self)
+	self.highlight:ClearAllPoints()
+	self.highlight:SetAllPoints(self.healthBar)
 end
 
 local ColorCastbar = function(self)
@@ -95,10 +92,6 @@ local ColorCastbar = function(self)
 		self.iconOverlay:SetVertexColor(1, 1, 1)
 		self.glow:SetVertexColor(0, 0, 0)
 	end
-end
-
-local OnHide = function(self)
-	self.highlight:Hide()
 end
 
 local OnSizeChanged = function(self, width, height)
@@ -149,6 +142,9 @@ local CreatePlate = function(self, frameName)
 	hbGlow:SetVertexColor(0, 0, 0)
 	healthBar.glow = hbGlow
 
+	highlight:SetTexture(highlightTexture)
+	self.highlight = highlight
+
 	castBar:HookScript("OnShow", ColorCastbar)
 	castBar:HookScript("OnSizeChanged", OnSizeChanged)
 	castBar:HookScript("OnValueChanged", UpdateTime)
@@ -189,11 +185,6 @@ local CreatePlate = function(self, frameName)
 	iconOverlay:SetTexture(iconTexture)
 	castBar.iconOverlay = iconOverlay
 
-	-- TODO: what is that for
-	highlight:SetTexture(barTexture)
-	highlight:SetVertexColor(0.25, 0.25, 0.25)
-	self.highlight = highlight
-
 	raidIcon:ClearAllPoints()
 	raidIcon:SetPoint("RIGHT", healthBar, -8, 0)
 	raidIcon:SetSize(15, 15)
@@ -217,7 +208,6 @@ local CreatePlate = function(self, frameName)
 	UpdatePlate(self)
 
 	self:SetScript("OnShow", UpdatePlate)
-	--self:SetScript("OnHide", OnHide)
 	self:SetScript("OnUpdate", UpdateThreat)
 
 	self.elapsed = 0
