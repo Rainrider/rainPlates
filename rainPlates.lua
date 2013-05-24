@@ -49,38 +49,42 @@ local UpdateThreat = function(self, elapsed)
 end
 
 local UpdatePlate = function(self)
-	self.healthBar:ClearAllPoints()
-	self.healthBar:SetPoint("CENTER", self.healthBar:GetParent())
-	self.healthBar:SetHeight(healthBarHeight)
+	local healthbar = self.healthBar
+	healthbar:ClearAllPoints()
+	healthbar:SetPoint("CENTER", healthbar:GetParent())
+	healthbar:SetHeight(healthBarHeight)
 
-	local r, g, b = self.healthBar:GetStatusBarColor()
-	self.healthBar.background:SetVertexColor(r * 0.33, g * 0.33, b * 0.33, 0.75)
+	local r, g, b = healthbar:GetStatusBarColor()
+	healthbar.background:SetVertexColor(r * 0.33, g * 0.33, b * 0.33, 0.75)
 
-	self.castBar:ClearAllPoints()
-	self.castBar:SetPoint("TOPLEFT", self.healthBar, "BOTTOMLEFT", 0, -4)
-	self.castBar:SetPoint("TOPRIGHT", self.healthBar, "BOTTOMRIGHT", 0, -4)
-	self.castBar:SetHeight(castBarHeight)
+	local castbar = self.castBar
+	castbar:ClearAllPoints()
+	castbar:SetPoint("TOPLEFT", healthbar, "BOTTOMLEFT", 0, -4)
+	castbar:SetPoint("TOPRIGHT", healthbar, "BOTTOMRIGHT", 0, -4)
+	castbar:SetHeight(castBarHeight)
 
 	local name = self.name:GetText()
 	name = (string.len(name) > 20) and string.gsub(name, "%s?(.[\128-\191]*)%S+%s", "%1. ") or name
 	self.name:SetText(name)
 
-	local level, elite = tonumber(self.level:GetText()), self.elite:IsShown()
-	self.level:ClearAllPoints()
-	self.level:SetPoint("RIGHT", self.healthBar, "LEFT", -2, 0)
+	local levelText = self.level
+	local level, elite = tonumber(levelText:GetText()), self.elite:IsShown()
+	levelText:ClearAllPoints()
+	levelText:SetPoint("RIGHT", healthbar, "LEFT", -2, 0)
 	if self.boss:IsShown() then
-		self.level:SetText("??")
-		self.level:SetTextColor(0.8, 0.05, 0)
-		self.level:Show()
+		levelText:SetText("??")
+		levelText:SetTextColor(0.8, 0.05, 0)
+		levelText:Show()
 	elseif not elite and level == playerLevel then
-		self.level:Hide()
+		levelText:Hide()
 	else
-		self.level:SetText(level..(elite and "+" or ""))
+		levelText:SetText(level..(elite and "+" or ""))
 	end
 
-	self.highlight:SetParent(self)
-	self.highlight:ClearAllPoints()
-	self.highlight:SetAllPoints(self.healthBar)
+	local highlight = self.highlight
+	highlight:SetParent(self)
+	highlight:ClearAllPoints()
+	highlight:SetAllPoints(healthbar)
 end
 
 local ColorCastbar = function(self)
