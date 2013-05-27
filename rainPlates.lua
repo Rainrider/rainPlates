@@ -64,7 +64,7 @@ local UpdatePlate = function(self)
 	castbar:SetHeight(castBarHeight)
 
 	local name = self.name:GetText()
-	name = (strlenutf8(name) > 20) and string.gsub(name, "%s?(.[\128-\191]*)%S+%s", "%1. ") or name
+	name = (strlenutf8(name) > 20) and string.gsub(name, "(%S[\128-\191]*)%S+%s", "%1. ") or name
 	self.name:SetText(name)
 
 	local levelText = self.level
