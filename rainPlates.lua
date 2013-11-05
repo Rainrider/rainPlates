@@ -57,12 +57,6 @@ local UpdatePlate = function(self)
 	local r, g, b = healthbar:GetStatusBarColor()
 	healthbar.background:SetVertexColor(r * 0.33, g * 0.33, b * 0.33, 0.75)
 
-	local castbar = self.castBar
-	castbar:ClearAllPoints()
-	castbar:SetPoint("TOPLEFT", healthbar, "BOTTOMLEFT", 0, -4)
-	castbar:SetPoint("TOPRIGHT", healthbar, "BOTTOMRIGHT", 0, -4)
-	castbar:SetHeight(castBarHeight)
-
 	local name = self.name:GetText()
 	name = (strlenutf8(name) > 20) and string.gsub(name, "(%S[\128-\191]*)%S+%s", "%1. ") or name
 	self.name:SetText(name)
@@ -88,6 +82,12 @@ local UpdatePlate = function(self)
 end
 
 local ColorCastbar = function(self)
+	local healthbar = self.hp
+	self:ClearAllPoints()
+	self:SetPoint("TOPLEFT", healthbar, "BOTTOMLEFT", 0, -4)
+	self:SetPoint("TOPRIGHT", healthbar, "BOTTOMRIGHT", 0, -4)
+	self:SetHeight(castBarHeight)
+
 	if self.shield:IsShown() then
 		self:SetStatusBarColor(0.8, 0.05, 0)
 		self.iconOverlay:SetVertexColor(0.8, 0.05, 0)
@@ -99,12 +99,12 @@ local ColorCastbar = function(self)
 end
 
 local OnSizeChanged = function(self, width, height)
-	if floor(height) ~= castBarHeight then
+	if floor(height + 0.1) ~= castBarHeight then
+		local healthbar = self.hp
 		self:ClearAllPoints()
+		self:SetPoint("TOPLEFT", healthbar, "BOTTOMLEFT", 0, -4)
+		self:SetPoint("TOPRIGHT", healthbar, "BOTTOMRIGHT", 0, -4)
 		self:SetHeight(castBarHeight)
-		local healthBar = self:GetParent():GetChildren()
-		self:SetPoint("TOPLEFT", healthBar, "BOTTOMLEFT", 0, -4)
-		self:SetPoint("TOPRIGHT", healthBar, "BOTTOMRIGHT", 0, -4)
 	end
 end
 
@@ -149,11 +149,12 @@ local CreatePlate = function(self, frameName)
 	highlight:SetTexture(highlightTexture)
 	self.highlight = highlight
 
+	castBar:SetHeight(castBarHeight)
+	castBar:SetStatusBarTexture(barTexture)
+
 	castBar:HookScript("OnShow", ColorCastbar)
 	castBar:HookScript("OnSizeChanged", OnSizeChanged)
 	castBar:HookScript("OnValueChanged", UpdateTime)
-
-	castBar:SetStatusBarTexture(barTexture)
 
 	castBar.shield = shieldIcon
 	castBar.frameName = frameName
@@ -195,6 +196,7 @@ local CreatePlate = function(self, frameName)
 	raidIcon:SetTexture(raidIcons)
 
 	self.healthBar = healthBar
+	castBar.hp = healthBar
 	self.castBar = castBar
 
 	self.oldglow = glow -- for threat update
