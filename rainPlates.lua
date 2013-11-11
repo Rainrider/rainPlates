@@ -7,7 +7,6 @@ local raidIcons = [=[Interface\AddOns\rainPlates\media\raidicons]=]
 
 local healthBarHeight = 5;
 local castBarHeight = 5;
--- TODO: when does UnitLevel("player") return the right level?
 local playerLevel = UnitLevel("player")
 
 local select = select
@@ -21,17 +20,17 @@ SetCVar("bloatthreat", 0)
 
 local castbarValues = {}
 
-local UpdateTime = function(self, value)
-	local minValue, maxValue = self:GetMinMaxValues()
-	local oldValue = castbarValues[self.frameName]
+local UpdateCastTime = function(castbar, value)
+	local minValue, maxValue = castbar:GetMinMaxValues()
+	local oldValue = castbarValues[castbar.frameName]
 	if (oldValue) then
 		if (value < oldValue) then -- castbar is depleting -> unit is channeling a spell
-			self.time:SetFormattedText("%.1f ", value)
+			castbar.time:SetFormattedText("%.1f ", value)
 		else
-			self.time:SetFormattedText("%.1f ", maxValue - value)
+			castbar.time:SetFormattedText("%.1f ", maxValue - value)
 		end
 	end
-	castbarValues[self.frameName] = value
+	castbarValues[castbar.frameName] = value
 end
 
 local UpdateThreat = function(self, elapsed)
@@ -81,30 +80,30 @@ local UpdatePlate = function(self)
 	highlight:SetAllPoints(healthbar)
 end
 
-local ColorCastbar = function(self)
-	local healthbar = self.hp
-	self:ClearAllPoints()
-	self:SetPoint("TOPLEFT", healthbar, "BOTTOMLEFT", 0, -4)
-	self:SetPoint("TOPRIGHT", healthbar, "BOTTOMRIGHT", 0, -4)
-	self:SetHeight(castBarHeight)
+local Castbar_OnShow = function(castbar)
+	local healthbar = castbar.hp
+	castbar:ClearAllPoints()
+	castbar:SetPoint("TOPLEFT", healthbar, "BOTTOMLEFT", 0, -4)
+	castbar:SetPoint("TOPRIGHT", healthbar, "BOTTOMRIGHT", 0, -4)
+	castbar:SetHeight(castBarHeight)
 
-	if self.shield:IsShown() then
-		self:SetStatusBarColor(0.8, 0.05, 0)
-		self.iconOverlay:SetVertexColor(0.8, 0.05, 0)
-		self.glow:SetVertexColor(0.75, 0.75, 0.75)
+	if castbar.shield:IsShown() then
+		castbar:SetStatusBarColor(0.8, 0.05, 0)
+		castbar.iconOverlay:SetVertexColor(0.8, 0.05, 0)
+		castbar.glow:SetVertexColor(0.75, 0.75, 0.75)
 	else
-		self.iconOverlay:SetVertexColor(1, 1, 1)
-		self.glow:SetVertexColor(0, 0, 0)
+		castbar.iconOverlay:SetVertexColor(1, 1, 1)
+		castbar.glow:SetVertexColor(0, 0, 0)
 	end
 end
 
-local OnSizeChanged = function(self, width, height)
+local Castbar_OnSizeChanged = function(castbar, width, height)
 	if floor(height + 0.1) ~= castBarHeight then
-		local healthbar = self.hp
-		self:ClearAllPoints()
-		self:SetPoint("TOPLEFT", healthbar, "BOTTOMLEFT", 0, -4)
-		self:SetPoint("TOPRIGHT", healthbar, "BOTTOMRIGHT", 0, -4)
-		self:SetHeight(castBarHeight)
+		local healthbar = castbar.hp
+		castbar:ClearAllPoints()
+		castbar:SetPoint("TOPLEFT", healthbar, "BOTTOMLEFT", 0, -4)
+		castbar:SetPoint("TOPRIGHT", healthbar, "BOTTOMRIGHT", 0, -4)
+		castbar:SetHeight(castBarHeight)
 	end
 end
 
@@ -152,9 +151,9 @@ local CreatePlate = function(self, frameName)
 	castBar:SetHeight(castBarHeight)
 	castBar:SetStatusBarTexture(barTexture)
 
-	castBar:HookScript("OnShow", ColorCastbar)
-	castBar:HookScript("OnSizeChanged", OnSizeChanged)
-	castBar:HookScript("OnValueChanged", UpdateTime)
+	castBar:HookScript("OnShow", Castbar_OnShow)
+	castBar:HookScript("OnSizeChanged", Castbar_OnSizeChanged)
+	castBar:HookScript("OnValueChanged", UpdateCastTime)
 
 	castBar.shield = shieldIcon
 	castBar.frameName = frameName
