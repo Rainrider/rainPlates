@@ -258,3 +258,22 @@ eventFrame:SetScript("OnEvent", function(self, event, level)
 		self:UnregisterEvent("PLAYER_LEVEL_UP")
 	end
 end)
+
+hooksecurefunc("SetCVar", function(cVar, value)
+	if cVar ~= "nameplateShowEnemies" and cVar ~= "nameplateShowFriends" then return end
+
+	local text = ""
+	local toggle = ""
+	if cVar == "nameplateShowFriends" then
+		text = UNIT_NAMEPLATES_SHOW_FRIENDS
+	elseif cVar == "nameplateShowEnemies" then
+		text = UNIT_NAMEPLATES_SHOW_ENEMIES
+	end
+	if value == 0 then
+		toggle = "|cffFF0000OFF|r"
+	elseif value == 1 then
+		toggle = "|cff00FF00ON|r"
+	end
+	print("|cff0099CCrainPlates:|r", text, toggle)
+
+end)
