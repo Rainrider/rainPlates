@@ -1,5 +1,5 @@
-## Interface: 50300
-## Title: |cff0099CCrain|rPlates
+## Interface: 50400
+## Title: rain|cff0099CCPlates|r
 ## Notes: Changes the default nameplates
 ## Author: Rainrider
 ## Version: 1.0
