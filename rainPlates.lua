@@ -31,6 +31,10 @@ local UpdateCastTime = function(castbar, value)
 		end
 	end
 	castbarValues[castbar.frameName] = value
+
+	if castbar.shield:IsShown() then
+		castbar:SetStatusBarColor(0.8, 0.05, 0)
+	end
 end
 
 local UpdateThreat = function(self, elapsed)
@@ -86,15 +90,6 @@ local Castbar_OnShow = function(castbar)
 	castbar:SetPoint("TOPLEFT", healthbar, "BOTTOMLEFT", 0, -4)
 	castbar:SetPoint("TOPRIGHT", healthbar, "BOTTOMRIGHT", 0, -4)
 	castbar:SetHeight(castBarHeight)
-
-	if castbar.shield:IsShown() then
-		castbar:SetStatusBarColor(0.8, 0.05, 0)
-		castbar.iconOverlay:SetVertexColor(0.8, 0.05, 0)
-		castbar.glow:SetVertexColor(0.75, 0.75, 0.75)
-	else
-		castbar.iconOverlay:SetVertexColor(1, 1, 1)
-		castbar.glow:SetVertexColor(0, 0, 0)
-	end
 end
 
 local Castbar_OnSizeChanged = function(castbar, width, height)
