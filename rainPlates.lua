@@ -25,9 +25,9 @@ local UpdateCastTime = function(castbar, value)
 	local oldValue = castbarValues[castbar.frameName]
 	if (oldValue) then
 		if (value < oldValue) then -- castbar is depleting -> unit is channeling a spell
-			castbar.time:SetFormattedText("%.1f ", value)
+			castbar.time:SetFormattedText("%d ", value)
 		else
-			castbar.time:SetFormattedText("%.1f ", maxValue - value)
+			castbar.time:SetFormattedText("%d ", maxValue - value)
 		end
 	end
 	castbarValues[castbar.frameName] = value
