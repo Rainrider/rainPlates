@@ -2,7 +2,7 @@ local barTexture = [=[Interface\AddOns\rainPlates\media\normtexc]=]
 local iconTexture = [=[Interface\AddOns\rainPlates\media\buttonnormal]=]
 local glowTexture = [=[Interface\AddOns\rainPlates\media\glowTex]=]
 local highlightTexture = [=[Interface\AddOns\rainPlates\media\highlighttex]=]
-local font, fontSize, fontOutline = GameFontNormal:GetFont(), 8
+local font, fontSize, fontOutline = rainDB and rainDB.npfont or GameFontNormal:GetFont(), 8
 local raidIcons = [=[Interface\AddOns\rainPlates\media\raidicons]=]
 
 local healthBarHeight = 5;

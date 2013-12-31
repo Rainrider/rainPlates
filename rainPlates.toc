@@ -6,4 +6,6 @@
 ## X-Credits: Caellian
 ## X-Category: Interface Enchancements
 
+## OptionalDeps: rainLib
+
 rainPlates.lua
