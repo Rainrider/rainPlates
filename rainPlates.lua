@@ -76,6 +76,9 @@ local UpdatePlate = function(self)
 		levelText:Hide()
 	else
 		levelText:SetText(level..(elite and "+" or ""))
+		if elite then
+			self.elite:SetTexture(nil)
+		end
 	end
 
 	local highlight = self.highlight
