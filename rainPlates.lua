@@ -110,7 +110,7 @@ end
 local CreatePlate = function(self, frameName)
 	local barFrame, nameFrame = self:GetChildren()
 
-	local healthBar, castBar = barFrame:GetChildren()
+	local healthBar, absorbBar, castBar = barFrame:GetChildren()
 
 	local glow, healthbarOverlay, highlight, levelText, bossIcon, raidIcon, stateIcon = barFrame:GetRegions()
 	local _, castbarOverlay, shieldIcon, spellIcon, spellName, spellNameBackground = castBar:GetRegions()
