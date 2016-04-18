@@ -37,22 +37,22 @@ local UpdateCastTime = function(castbar, value)
 	end
 end
 
-local UpdateThreat = function(self, elapsed)
-	self.elapsed = self.elapsed + elapsed
-	if self.elapsed >= 0.5 then
-		if not self.oldglow:IsShown() then
-			self.healthBar.glow:SetVertexColor(0, 0, 0)
+local UpdateThreat = function(plate, elapsed)
+	plate.elapsed = plate.elapsed + elapsed
+	if plate.elapsed >= 0.5 then
+		if not plate.oldglow:IsShown() then
+			plate.healthBar.glow:SetVertexColor(0, 0, 0)
 		else
-			local r, g, b = self.oldglow:GetVertexColor()
-			self.healthBar.glow:SetVertexColor(r, g, b, 1)
+			local r, g, b = plate.oldglow:GetVertexColor()
+			plate.healthBar.glow:SetVertexColor(r, g, b, 1)
 		end
 
-		self.elapsed = 0
+		plate.elapsed = 0
 	end
 end
 
-local UpdatePlate = function(self)
-	local healthbar = self.healthBar
+local UpdatePlate = function(plate)
+	local healthbar = plate.healthBar
 	healthbar:ClearAllPoints()
 	healthbar:SetPoint("CENTER", healthbar:GetParent())
 	healthbar:SetHeight(healthBarHeight)
@@ -60,15 +60,15 @@ local UpdatePlate = function(self)
 	local r, g, b = healthbar:GetStatusBarColor()
 	healthbar.background:SetVertexColor(r * 0.33, g * 0.33, b * 0.33, 0.75)
 
-	local name = self.name:GetText()
+	local name = plate.name:GetText()
 	name = (strlenutf8(name) > 20) and string.gsub(name, "(%S[\128-\191]*)%S+%s", "%1. ") or name
-	self.name:SetText(name)
+	plate.name:SetText(name)
 
-	local levelText = self.level
-	local level, elite = tonumber(levelText:GetText()), self.elite:IsShown()
+	local levelText = plate.level
+	local level, elite = tonumber(levelText:GetText()), plate.elite:IsShown()
 	levelText:ClearAllPoints()
 	levelText:SetPoint("RIGHT", healthbar, "LEFT", -2, 0)
-	if self.boss:IsShown() then
+	if plate.boss:IsShown() then
 		levelText:SetText("??")
 		levelText:SetTextColor(0.8, 0.05, 0)
 		levelText:Show()
@@ -77,12 +77,12 @@ local UpdatePlate = function(self)
 	else
 		levelText:SetText(level..(elite and "+" or ""))
 		if elite then
-			self.elite:SetTexture(nil)
+			plate.elite:SetTexture(nil)
 		end
 	end
 
-	local highlight = self.highlight
-	highlight:SetParent(self)
+	local highlight = plate.highlight
+	highlight:SetParent(plate)
 	highlight:ClearAllPoints()
 	highlight:SetAllPoints(healthbar)
 end
@@ -107,8 +107,8 @@ local Castbar_OnSizeChanged = function(castbar, width, height)
 	end
 end
 
-local CreatePlate = function(self, frameName)
-	local barFrame, nameFrame = self:GetChildren()
+local CreatePlate = function(plate, frameName)
+	local barFrame, nameFrame = plate:GetChildren()
 
 	local healthBar, absorbBar, castBar = barFrame:GetChildren()
 
@@ -120,11 +120,11 @@ local CreatePlate = function(self, frameName)
 	nameText:SetPoint("BOTTOM", healthBar, "TOP", 0, 2)
 	nameText:SetFont(font, fontSize, fontOutline)
 	nameText:SetShadowOffset(1.25, -1.25)
-	self.name = nameText
+	plate.name = nameText
 
 	levelText:SetFont(font, fontSize, fontOutline)
 	levelText:SetShadowOffset(1.25, -1.25)
-	self.level = levelText
+	plate.level = levelText
 
 	spellName:ClearAllPoints()
 	spellName:SetPoint("TOP", castBar, "BOTTOM", 0, -2)
@@ -146,7 +146,7 @@ local CreatePlate = function(self, frameName)
 	healthBar.glow = hbGlow
 
 	highlight:SetTexture(highlightTexture)
-	self.highlight = highlight
+	plate.highlight = highlight
 
 	castBar:SetHeight(castBarHeight)
 	castBar:SetStatusBarTexture(barTexture)
@@ -194,13 +194,13 @@ local CreatePlate = function(self, frameName)
 	raidIcon:SetSize(15, 15)
 	raidIcon:SetTexture(raidIcons)
 
-	self.healthBar = healthBar
+	plate.healthBar = healthBar
 	castBar.hp = healthBar
-	self.castBar = castBar
+	plate.castBar = castBar
 
-	self.oldglow = glow -- for threat update
-	self.elite = stateIcon
-	self.boss = bossIcon
+	plate.oldglow = glow -- for threat update
+	plate.elite = stateIcon
+	plate.boss = bossIcon
 
 	glow:SetTexture(nil)
 	healthbarOverlay:SetTexture(nil)
@@ -210,21 +210,21 @@ local CreatePlate = function(self, frameName)
 	bossIcon:SetTexture(nil)
 	spellNameBackground:SetTexture(nil)
 
-	UpdatePlate(self)
+	UpdatePlate(plate)
 
-	self:SetScript("OnShow", UpdatePlate)
-	self:SetScript("OnUpdate", UpdateThreat)
+	plate:SetScript("OnShow", UpdatePlate)
+	plate:SetScript("OnUpdate", UpdateThreat)
 
-	self.elapsed = 0
+	plate.elapsed = 0
 end
 
 local CheckFrames = function(num, ...)
 	for i = 1, num do
-		local frame = select(i, ...)
-		local frameName = frame:GetName()
-		if frameName and frameName:find("NamePlate%d") and not frame.done then
-			CreatePlate(frame, frameName)
-			frame.done = true
+		local plate = select(i, ...)
+		local name = plate:GetName()
+		if name and name:find("NamePlate%d") and not plate.done then
+			CreatePlate(plate, name)
+			plate.done = true
 		end
 	end
 end
