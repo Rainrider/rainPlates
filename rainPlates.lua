@@ -177,7 +177,6 @@ local CreatePlate = function(plate, frameName)
 	castBar.time = castTime
 
 	spellIcon:ClearAllPoints()
-	spellIcon:SetParent(castBar)
 	spellIcon:SetPoint("LEFT", castBar, 8, 0)
 	spellIcon:SetSize(15, 15)
 	spellIcon:SetTexCoord(0.9, 0.1, 0.9, 0.1)
