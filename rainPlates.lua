@@ -31,10 +31,6 @@ local UpdateCastTime = function(castbar, value)
 		end
 	end
 	castbarValues[castbar.frameName] = value
-
-	if castbar.shield:IsShown() then
-		castbar:SetStatusBarColor(0.8, 0.05, 0)
-	end
 end
 
 local UpdateThreat = function(plate, elapsed)
@@ -85,6 +81,12 @@ local UpdatePlate = function(plate)
 	highlight:SetParent(plate)
 	highlight:ClearAllPoints()
 	highlight:SetAllPoints(healthbar)
+end
+
+local Castbar_OnShow = function(castbar)
+	if castbar.shield:IsShown() then
+		castbar:SetStatusBarColor(0.8, 0.05, 0)
+	end
 end
 
 local Castbar_OnSizeChanged = function(castbar, width, height)
@@ -144,6 +146,7 @@ local CreatePlate = function(plate, frameName)
 	castBar:SetPoint("TOPRIGHT", healthBar, "BOTTOMRIGHT", 0, -4)
 	castBar:SetHeight(castBarHeight)
 
+	castBar:HookScript("OnShow", Castbar_OnShow)
 	castBar:HookScript("OnSizeChanged", Castbar_OnSizeChanged)
 	castBar:HookScript("OnValueChanged", UpdateCastTime)
 
