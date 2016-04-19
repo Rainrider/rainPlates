@@ -2,36 +2,26 @@ local barTexture = [=[Interface\AddOns\rainPlates\media\normtexc]=]
 local iconTexture = [=[Interface\AddOns\rainPlates\media\buttonnormal]=]
 local glowTexture = [=[Interface\AddOns\rainPlates\media\glowTex]=]
 local highlightTexture = [=[Interface\AddOns\rainPlates\media\highlighttex]=]
-local font, fontSize, fontOutline = rainDB and rainDB.npfont or GameFontNormal:GetFont(), 8
+local font, fontSize, fontOutline = rainDB and rainDB.npfont or GameFontNormal:GetFont(), 8, nil
 local raidIcons = [=[Interface\AddOns\rainPlates\media\raidicons]=]
 
 local healthbarHeight = 5;
 local castbarHeight = 5;
 local playerLevel = UnitLevel("player")
 
-local select = select
-local GetMinMaxValues = GetMinMaxValues
+local _G = _G
+local floor = _G.math.floor
+local select = _G.select
+local tonumber = _G.tonumber
+local find = _G.string.find
+local gsub = _G.string.gsub
+local strlenutf8 = _G.strlenutf8
 
 local eventFrame = CreateFrame("Frame")
 
 SetCVar("bloattest", 0) -- 1 might make nameplates larger but it fixes the disappearing ones.
 SetCVar("bloatnameplates", 0) -- 1 makes nameplates larger depending on threat percentage.
 SetCVar("bloatthreat", 0)
-
-local castbarValues = {}
-
-local UpdateCastTime = function(castbar, value)
-	local minValue, maxValue = castbar:GetMinMaxValues()
-	local oldValue = castbarValues[castbar.frameName]
-	if (oldValue) then
-		if (value < oldValue) then -- castbar is depleting -> unit is channeling a spell
-			castbar.time:SetFormattedText("%d ", value)
-		else
-			castbar.time:SetFormattedText("%d ", maxValue - value)
-		end
-	end
-	castbarValues[castbar.frameName] = value
-end
 
 local UpdateThreat = function(plate, elapsed)
 	plate.elapsed = plate.elapsed + elapsed
@@ -57,7 +47,7 @@ local UpdatePlate = function(plate)
 	healthbar.background:SetVertexColor(r * 0.33, g * 0.33, b * 0.33, 0.75)
 
 	local name = plate.name:GetText()
-	name = (strlenutf8(name) > 20) and string.gsub(name, "(%S[\128-\191]*)%S+%s", "%1. ") or name
+	name = (strlenutf8(name) > 20) and gsub(name, "(%S[\128-\191]*)%S+%s", "%1. ") or name
 	plate.name:SetText(name)
 
 	local levelText = plate.level
@@ -89,7 +79,7 @@ local ColorCastbar = function(castbar)
 	end
 end
 
-local FixCastbarSize = function(castbar, width, height)
+local FixCastbarSize = function(castbar, _, height)
 	if floor(height + 0.1) ~= castbarHeight then
 		local healthbar = castbar.hp
 		castbar:ClearAllPoints()
@@ -97,6 +87,21 @@ local FixCastbarSize = function(castbar, width, height)
 		castbar:SetPoint("TOPRIGHT", healthbar, "BOTTOMRIGHT", 0, -4)
 		castbar:SetHeight(castbarHeight)
 	end
+end
+
+local castbarValues = {}
+local UpdateCastTime = function(castbar, value)
+	local plate = castbar.frameName
+	local _, maxValue = castbar:GetMinMaxValues()
+	local oldValue = castbarValues[plate]
+	if (oldValue) then
+		if (value < oldValue) then -- castbar is depleting -> unit is channeling a spell
+			castbar.time:SetFormattedText("%d ", value)
+		else
+			castbar.time:SetFormattedText("%d ", maxValue - value)
+		end
+	end
+	castbarValues[plate] = value
 end
 
 local CreatePlate = function(plate, frameName)
@@ -216,7 +221,7 @@ local CheckFrames = function(num, ...)
 	for i = 1, num do
 		local plate = select(i, ...)
 		local name = plate:GetName()
-		if name and name:find("NamePlate%d") and not plate.done then
+		if name and find(name, "NamePlate%d") and not plate.done then
 			CreatePlate(plate, name)
 			plate.done = true
 		end
@@ -225,14 +230,14 @@ end
 
 local numKids = 0
 local lastUpdate = 0
-eventFrame:SetScript("OnUpdate", function(self, elapsed)
+eventFrame:SetScript("OnUpdate", function(_, elapsed)
 	lastUpdate = lastUpdate + elapsed
 
 	if lastUpdate > 0.1 then
-		local newNumKids = WorldFrame:GetNumChildren()
+		local newNumKids = _G.WorldFrame:GetNumChildren()
 
 		if newNumKids ~= numKids then
-			CheckFrames(newNumKids, WorldFrame:GetChildren())
+			CheckFrames(newNumKids, _G.WorldFrame:GetChildren())
 
 			numKids = newNumKids
 		end
@@ -240,14 +245,14 @@ eventFrame:SetScript("OnUpdate", function(self, elapsed)
 	end
 end)
 
-if playerLevel ~= MAX_PLAYER_LEVEL then
+if playerLevel ~= _G.MAX_PLAYER_LEVEL then
 	eventFrame:RegisterEvent("PLAYER_LEVEL_UP")
 end
 
-eventFrame:SetScript("OnEvent", function(self, event, level)
+eventFrame:SetScript("OnEvent", function(self, _, level)
 	playerLevel = tonumber(level)
 
-	if playerLevel == MAX_PLAYER_LEVEL then
+	if playerLevel == _G.MAX_PLAYER_LEVEL then
 		self:UnregisterEvent("PLAYER_LEVEL_UP")
 	end
 end)
@@ -258,9 +263,9 @@ hooksecurefunc("SetCVar", function(cVar, value)
 	local text = ""
 	local toggle = ""
 	if cVar == "nameplateShowFriends" then
-		text = UNIT_NAMEPLATES_SHOW_FRIENDS
+		text = _G.UNIT_NAMEPLATES_SHOW_FRIENDS
 	elseif cVar == "nameplateShowEnemies" then
-		text = UNIT_NAMEPLATES_SHOW_ENEMIES
+		text = _G.UNIT_NAMEPLATES_SHOW_ENEMIES
 	end
 	if value == 0 then
 		toggle = "|cffFF0000OFF|r"
