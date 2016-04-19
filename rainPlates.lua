@@ -148,7 +148,6 @@ local CreatePlate = function(plate, frameName)
 	highlight:SetTexture(highlightTexture)
 	plate.highlight = highlight
 
-	castBar:SetHeight(castBarHeight)
 	castBar:SetStatusBarTexture(barTexture)
 
 	castBar:HookScript("OnShow", Castbar_OnShow)
