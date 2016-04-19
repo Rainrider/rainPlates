@@ -62,6 +62,9 @@ local UpdatePlate = function(plate)
 
 	local levelText = plate.level
 	local level, elite = tonumber(levelText:GetText()), plate.elite:IsShown()
+	if elite then
+		plate.elite:Hide()
+	end
 	levelText:ClearAllPoints()
 	levelText:SetPoint("RIGHT", healthbar, "LEFT", -2, 0)
 	if plate.boss:IsShown() then
@@ -72,9 +75,6 @@ local UpdatePlate = function(plate)
 		levelText:Hide()
 	else
 		levelText:SetText(level..(elite and "+" or ""))
-		if elite then
-			plate.elite:SetTexture(nil)
-		end
 	end
 
 	local highlight = plate.highlight
@@ -201,7 +201,6 @@ local CreatePlate = function(plate, frameName)
 	healthbarOverlay:SetTexture(nil)
 	shieldIcon:SetTexture(nil)
 	castbarOverlay:SetTexture(nil)
-	stateIcon:SetTexture(nil)
 	bossIcon:SetTexture(nil)
 	spellNameBackground:SetTexture(nil)
 
