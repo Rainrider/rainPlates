@@ -191,6 +191,7 @@ local CreatePlate = function(plate, frameName)
 	raidIcon:SetPoint("RIGHT", healthBar, -8, 0)
 	raidIcon:SetSize(15, 15)
 	raidIcon:SetTexture(raidIcons)
+	raidIcon:SetDrawLayer("ARTWORK", 1)
 
 	plate.healthBar = healthBar
 	castBar.hp = healthBar
