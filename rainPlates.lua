@@ -87,14 +87,6 @@ local UpdatePlate = function(plate)
 	highlight:SetAllPoints(healthbar)
 end
 
-local Castbar_OnShow = function(castbar)
-	local healthbar = castbar.hp
-	castbar:ClearAllPoints()
-	castbar:SetPoint("TOPLEFT", healthbar, "BOTTOMLEFT", 0, -4)
-	castbar:SetPoint("TOPRIGHT", healthbar, "BOTTOMRIGHT", 0, -4)
-	castbar:SetHeight(castBarHeight)
-end
-
 local Castbar_OnSizeChanged = function(castbar, width, height)
 	if floor(height + 0.1) ~= castBarHeight then
 		local healthbar = castbar.hp
@@ -149,8 +141,11 @@ local CreatePlate = function(plate, frameName)
 	plate.highlight = highlight
 
 	castBar:SetStatusBarTexture(barTexture)
+	castBar:ClearAllPoints()
+	castBar:SetPoint("TOPLEFT", healthBar, "BOTTOMLEFT", 0, -4)
+	castBar:SetPoint("TOPRIGHT", healthBar, "BOTTOMRIGHT", 0, -4)
+	castBar:SetHeight(castBarHeight)
 
-	castBar:HookScript("OnShow", Castbar_OnShow)
 	castBar:HookScript("OnSizeChanged", Castbar_OnSizeChanged)
 	castBar:HookScript("OnValueChanged", UpdateCastTime)
 
