@@ -94,8 +94,6 @@ local Castbar_OnSizeChanged = function(castbar, width, height)
 		castbar:SetPoint("TOPLEFT", healthbar, "BOTTOMLEFT", 0, -4)
 		castbar:SetPoint("TOPRIGHT", healthbar, "BOTTOMRIGHT", 0, -4)
 		castbar:SetHeight(castBarHeight)
-
-		castbar:GetHeight() -- fixes the strange re-sizing issues
 	end
 end
 
