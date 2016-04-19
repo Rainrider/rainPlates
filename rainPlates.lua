@@ -5,8 +5,8 @@ local highlightTexture = [=[Interface\AddOns\rainPlates\media\highlighttex]=]
 local font, fontSize, fontOutline = rainDB and rainDB.npfont or GameFontNormal:GetFont(), 8
 local raidIcons = [=[Interface\AddOns\rainPlates\media\raidicons]=]
 
-local healthBarHeight = 5;
-local castBarHeight = 5;
+local healthbarHeight = 5;
+local castbarHeight = 5;
 local playerLevel = UnitLevel("player")
 
 local select = select
@@ -37,10 +37,10 @@ local UpdateThreat = function(plate, elapsed)
 	plate.elapsed = plate.elapsed + elapsed
 	if plate.elapsed >= 0.5 then
 		if not plate.oldglow:IsShown() then
-			plate.healthBar.glow:SetVertexColor(0, 0, 0)
+			plate.healthbar.glow:SetVertexColor(0, 0, 0)
 		else
 			local r, g, b = plate.oldglow:GetVertexColor()
-			plate.healthBar.glow:SetVertexColor(r, g, b, 1)
+			plate.healthbar.glow:SetVertexColor(r, g, b, 1)
 		end
 
 		plate.elapsed = 0
@@ -48,10 +48,10 @@ local UpdateThreat = function(plate, elapsed)
 end
 
 local UpdatePlate = function(plate)
-	local healthbar = plate.healthBar
+	local healthbar = plate.healthbar
 	healthbar:ClearAllPoints()
 	healthbar:SetPoint("CENTER", healthbar:GetParent())
-	healthbar:SetHeight(healthBarHeight)
+	healthbar:SetHeight(healthbarHeight)
 
 	local r, g, b = healthbar:GetStatusBarColor()
 	healthbar.background:SetVertexColor(r * 0.33, g * 0.33, b * 0.33, 0.75)
@@ -83,118 +83,118 @@ local UpdatePlate = function(plate)
 	highlight:SetAllPoints(healthbar)
 end
 
-local Castbar_OnShow = function(castbar)
+local ColorCastbar = function(castbar)
 	if castbar.shield:IsShown() then
 		castbar:SetStatusBarColor(0.8, 0.05, 0)
 	end
 end
 
-local Castbar_OnSizeChanged = function(castbar, width, height)
-	if floor(height + 0.1) ~= castBarHeight then
+local FixCastbarSize = function(castbar, width, height)
+	if floor(height + 0.1) ~= castbarHeight then
 		local healthbar = castbar.hp
 		castbar:ClearAllPoints()
 		castbar:SetPoint("TOPLEFT", healthbar, "BOTTOMLEFT", 0, -4)
 		castbar:SetPoint("TOPRIGHT", healthbar, "BOTTOMRIGHT", 0, -4)
-		castbar:SetHeight(castBarHeight)
+		castbar:SetHeight(castbarHeight)
 	end
 end
 
 local CreatePlate = function(plate, frameName)
 	local barFrame, nameFrame = plate:GetChildren()
 
-	local healthBar, absorbBar, castBar = barFrame:GetChildren()
+	local healthbar, absorbbar, castbar = barFrame:GetChildren()
 
-	local glow, healthbarOverlay, highlight, levelText, bossIcon, raidIcon, stateIcon = barFrame:GetRegions()
-	local _, castbarOverlay, shieldIcon, spellIcon, spellName, spellNameBackground = castBar:GetRegions()
-	local nameText = nameFrame:GetRegions()
+	local glow, healthbarOverlay, highlight, level, bossIcon, raidIcon, eliteIcon = barFrame:GetRegions()
+	local _, castbarOverlay, shieldIcon, spellIcon, spellName, spellNameBackground = castbar:GetRegions()
+	local name = nameFrame:GetRegions()
 
-	nameText:ClearAllPoints()
-	nameText:SetPoint("BOTTOM", healthBar, "TOP", 0, 2)
-	nameText:SetFont(font, fontSize, fontOutline)
-	nameText:SetShadowOffset(1.25, -1.25)
-	plate.name = nameText
+	name:ClearAllPoints()
+	name:SetPoint("BOTTOM", healthbar, "TOP", 0, 2)
+	name:SetFont(font, fontSize, fontOutline)
+	name:SetShadowOffset(1.25, -1.25)
+	plate.name = name
 
-	levelText:SetFont(font, fontSize, fontOutline)
-	levelText:SetShadowOffset(1.25, -1.25)
-	plate.level = levelText
+	level:SetFont(font, fontSize, fontOutline)
+	level:SetShadowOffset(1.25, -1.25)
+	plate.level = level
 
 	spellName:ClearAllPoints()
-	spellName:SetPoint("TOP", castBar, "BOTTOM", 0, -2)
+	spellName:SetPoint("TOP", castbar, "BOTTOM", 0, -2)
 	spellName:SetFont(font, fontSize, fontOutline)
 	spellName:SetShadowOffset(1.25, -1.25)
 
-	healthBar:SetStatusBarTexture(barTexture)
+	healthbar:SetStatusBarTexture(barTexture)
 
-	local hbBackground = healthBar:CreateTexture(nil, "BACKGROUND")
+	local hbBackground = healthbar:CreateTexture(nil, "BACKGROUND")
 	hbBackground:SetAllPoints()
 	hbBackground:SetTexture(barTexture)
-	healthBar.background = hbBackground
+	healthbar.background = hbBackground
 
-	local hbGlow = healthBar:CreateTexture(nil, "BACKGROUND")
+	local hbGlow = healthbar:CreateTexture(nil, "BACKGROUND")
 	hbGlow:SetTexture(glowTexture)
 	hbGlow:SetPoint("TOPLEFT", -1.5, 1.5)
 	hbGlow:SetPoint("BOTTOMRIGHT", 1.5, -1.5)
 	hbGlow:SetVertexColor(0, 0, 0)
-	healthBar.glow = hbGlow
+	healthbar.glow = hbGlow
 
 	highlight:SetTexture(highlightTexture)
 	plate.highlight = highlight
 
-	castBar:SetStatusBarTexture(barTexture)
-	castBar:ClearAllPoints()
-	castBar:SetPoint("TOPLEFT", healthBar, "BOTTOMLEFT", 0, -4)
-	castBar:SetPoint("TOPRIGHT", healthBar, "BOTTOMRIGHT", 0, -4)
-	castBar:SetHeight(castBarHeight)
+	castbar:SetStatusBarTexture(barTexture)
+	castbar:ClearAllPoints()
+	castbar:SetPoint("TOPLEFT", healthbar, "BOTTOMLEFT", 0, -4)
+	castbar:SetPoint("TOPRIGHT", healthbar, "BOTTOMRIGHT", 0, -4)
+	castbar:SetHeight(castbarHeight)
 
-	castBar:HookScript("OnShow", Castbar_OnShow)
-	castBar:HookScript("OnSizeChanged", Castbar_OnSizeChanged)
-	castBar:HookScript("OnValueChanged", UpdateCastTime)
+	castbar:HookScript("OnShow", ColorCastbar)
+	castbar:HookScript("OnSizeChanged", FixCastbarSize)
+	castbar:HookScript("OnValueChanged", UpdateCastTime)
 
-	castBar.shield = shieldIcon
-	castBar.frameName = frameName
+	castbar.shield = shieldIcon
+	castbar.frameName = frameName
 
-	local cbBackground = castBar:CreateTexture(nil, "BACKGROUND")
+	local cbBackground = castbar:CreateTexture(nil, "BACKGROUND")
 	cbBackground:SetAllPoints()
 	cbBackground:SetTexture(barTexture)
 	cbBackground:SetVertexColor(0.25, 0.25, 0.25, 0.75)
 
-	local cbGlow = castBar:CreateTexture(nil, "BACKGROUND")
+	local cbGlow = castbar:CreateTexture(nil, "BACKGROUND")
 	cbGlow:SetTexture(glowTexture)
 	cbGlow:SetPoint("TOPLEFT", -1.5, 1.5)
 	cbGlow:SetPoint("BOTTOMRIGHT", 1.5, -1.5)
 	cbGlow:SetVertexColor(0, 0, 0)
-	castBar.glow = cbGlow
+	castbar.glow = cbGlow
 
-	local castTime = castBar:CreateFontString()
-	castTime:SetPoint("RIGHT", castBar, "LEFT", -2, 0)
+	local castTime = castbar:CreateFontString()
+	castTime:SetPoint("RIGHT", castbar, "LEFT", -2, 0)
 	castTime:SetFont(font, fontSize, fontOutline)
 	castTime:SetTextColor(0.84, 0.75, 0.65)
 	castTime:SetShadowOffset(1.25, -1.25)
-	castBar.time = castTime
+	castbar.time = castTime
 
 	spellIcon:ClearAllPoints()
-	spellIcon:SetPoint("LEFT", castBar, 8, 0)
+	spellIcon:SetPoint("LEFT", castbar, 8, 0)
 	spellIcon:SetSize(15, 15)
 	spellIcon:SetTexCoord(0.9, 0.1, 0.9, 0.1)
 
-	local iconOverlay = castBar:CreateTexture(nil, "OVERLAY", nil, 2) -- 2 sublevels above spellIcon
+	local iconOverlay = castbar:CreateTexture(nil, "OVERLAY", nil, 2) -- 2 sublevels above spellIcon
 	iconOverlay:SetPoint("TOPLEFT", spellIcon, -1.5, 1.5)
 	iconOverlay:SetPoint("BOTTOMRIGHT", spellIcon, 1.5, -1.5)
 	iconOverlay:SetTexture(iconTexture)
-	castBar.iconOverlay = iconOverlay
+	castbar.iconOverlay = iconOverlay
 
 	raidIcon:ClearAllPoints()
-	raidIcon:SetPoint("RIGHT", healthBar, -8, 0)
+	raidIcon:SetPoint("RIGHT", healthbar, -8, 0)
 	raidIcon:SetSize(15, 15)
 	raidIcon:SetTexture(raidIcons)
 	raidIcon:SetDrawLayer("ARTWORK", 1)
 
-	plate.healthBar = healthBar
-	castBar.hp = healthBar
-	plate.castBar = castBar
+	plate.healthbar = healthbar
+	castbar.hp = healthbar
+	plate.castBar = castbar
 
 	plate.oldglow = glow -- for threat update
-	plate.elite = stateIcon
+	plate.elite = eliteIcon
 	plate.boss = bossIcon
 
 	glow:SetTexture(nil)
