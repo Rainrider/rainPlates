@@ -1,4 +1,4 @@
-## Interface: 60000
+## Interface: 60200
 ## Title: rain|cff0099CCPlates|r
 ## Notes: Changes the default nameplates
 ## Author: Rainrider
